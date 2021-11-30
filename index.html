@@ -64,6 +64,56 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-指针" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/11/30/%E6%8C%87%E9%92%88/" class="article-date">
+  <time datetime="2021-11-30T07:41:01.000Z" itemprop="datePublished">2021-11-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/11/30/%E6%8C%87%E9%92%88/">指针</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="指针步长"><a href="#指针步长" class="headerlink" title="指针步长"></a>指针步长</h2><p>指针步长指指针变量 +1 后跳跃的字节数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> *p = <span class="literal">nullptr</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, p);     <span class="comment">// 0</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, p + <span class="number">1</span>); <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">double</span> *q = <span class="literal">nullptr</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, q);     <span class="comment">// 0</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, q + <span class="number">1</span>); <span class="comment">// 8</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也是指针在解引用时取出的字节数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">1024</span>] = <span class="string">&quot;&quot;</span>;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">1000</span>;</span><br><span class="line">    <span class="built_in">memcpy</span>(buf, &amp;a, <span class="keyword">sizeof</span>(<span class="keyword">int</span>));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">char</span> *p = buf;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, *(<span class="keyword">int</span> *)p); <span class="comment">// 解引用 4 个字节, 结果为 1000</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在结构体中, 可以用 offsetof(s, m) 宏函数来取得成员的偏移量, 头文件 stddef.h</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Person</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> a;       <span class="comment">// 0 - 3</span></span><br><span class="line">    <span class="keyword">int</span> b;        <span class="comment">// 4 - 7</span></span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">64</span>]; <span class="comment">// 8 - 71</span></span><br><span class="line">    <span class="keyword">int</span> d;        <span class="comment">// 72-75</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test02</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">Person</span> <span class="title">p</span> =</span> &#123;<span class="string">&#x27;a&#x27;</span>, <span class="number">10</span>, <span class="string">&quot;Hello, world&quot;</span>, <span class="number">1000</span>&#125;; <span class="comment">// 初始化</span></span><br><span class="line">    <span class="comment">// p 中的 d 属性偏移量是多少?</span></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;d 的漂移量是 %ld\n&quot;</span>, offsetof(struct Person, d));</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;d 的值为 %d\n&quot;</span>, *(<span class="keyword">int</span> *)((<span class="keyword">char</span> *)&amp;p + offsetof(struct Person, d)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>##指针做函数参数</p>
+<ul>
+<li>输入: 主调函数分配内存</li>
+<li>输出: 被调函数分配内存</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">(<span class="keyword">char</span> *p)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">strcpy</span>(p, <span class="string">&quot;hello, world&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">1024</span>] = &#123;<span class="number">0</span>&#125;; <span class="comment">// 栈区分配内存</span></span><br><span class="line">    func(buf);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, buf);</span><br><span class="line">    <span class="keyword">char</span> *p = (<span class="keyword">char</span> *)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(<span class="keyword">char</span>) * <span class="number">64</span>); <span class="comment">// 堆区分配内存</span></span><br><span class="line">    <span class="built_in">memset</span>(p, <span class="number">0</span>, <span class="number">64</span>);</span><br><span class="line">    func(p);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, p);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/11/30/%E6%8C%87%E9%92%88/" data-id="ckwm3xs1k0000mykf22e0ds21" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-C变量" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2021/11/26/C%E5%8F%98%E9%87%8F/" class="article-date">
@@ -113,11 +163,36 @@
 <h3 id="未初始化数据区-bss"><a href="#未初始化数据区-bss" class="headerlink" title="未初始化数据区(bss)"></a>未初始化数据区(bss)</h3><p>未初始化数据区在程序开始执行之前呗内核初始化为 0 或 NULL.</p>
 <h2 id="运行之后"><a href="#运行之后" class="headerlink" title="运行之后"></a>运行之后</h2><h3 id="栈区-stack"><a href="#栈区-stack" class="headerlink" title="栈区(stack)"></a>栈区(stack)</h3><p>由编译器自动分配释放, 存放函数的参数值, 返回值以及局部变量等, 在运行过程中实时加载和释放, 因此生命周期为申请到释放该段栈空间.</p>
 <h3 id="堆区-heap"><a href="#堆区-heap" class="headerlink" title="堆区(heap)"></a>堆区(heap)</h3><p>堆是一个大容器, 容量要远远大于栈. 一般由程序员分配和释放, 若不释放, 程序结束时由操作系统释放.</p>
+<h3 id="数据区"><a href="#数据区" class="headerlink" title="数据区"></a>数据区</h3><p>静态变量在程序运行前分配内存,生命周期在程序运行结束时死亡;</p>
+<p>默认属于内部链接属性, 只能在当前文件中使用.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// filename: test.c</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> a = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// filaname: test1.c</span></span><br><span class="line">a = <span class="number">100</span>; <span class="comment">// 错误, 在文件外无法访问</span></span><br></pre></td></tr></table></figure>
+
+<p>全局变量关键字extern, 属于外部链接属性</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// filename: test.c</span></span><br><span class="line"><span class="keyword">int</span> a = <span class="number">10</span>; <span class="comment">// 默认是外部链接属性</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// filaname: test1.c</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">int</span> a; <span class="comment">// 链接时在其他文件中查找, 如果没有, 报错</span></span><br><span class="line">a = <span class="number">100</span> </span><br></pre></td></tr></table></figure>
+<p>编译命令为</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc test1.c test.c -o main</span><br></pre></td></tr></table></figure>
+
+<p>const常量</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> a = <span class="number">10</span>; <span class="comment">// 全局const</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    a = <span class="number">100</span>; <span class="comment">// 直接修改失败</span></span><br><span class="line">    <span class="keyword">int</span> *p = &amp;a;</span><br><span class="line">    *p = <span class="number">10</span>; <span class="comment">// 间接修改失败</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> b = <span class="number">100</span>; <span class="comment">// 数据存放在栈区, 并不是常量</span></span><br><span class="line">    b = <span class="number">10</span>; <span class="comment">// 直接修改失败</span></span><br><span class="line">    <span class="keyword">int</span> *p = &amp;b;</span><br><span class="line">    *p = <span class="number">10</span>; <span class="comment">// 可以修改, 但是会报警告</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字符串常量</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> *p1 = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">    <span class="keyword">char</span> *p2 = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">    <span class="keyword">char</span> *p3 = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, (<span class="keyword">int</span>)p1);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, (<span class="keyword">int</span>)p2);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, (<span class="keyword">int</span>)p3);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, (<span class="keyword">int</span>)<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>得到结果为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1721774088</span><br><span class="line">1721774088</span><br><span class="line">1721774088</span><br><span class="line">1721774088</span><br></pre></td></tr></table></figure>
+<p>因此字符串常量是可以共享的, 置于常量区.<br>ANSI C 规定: 字符串常量的修改是未定义的行为</p>
+<h2 id="函数调用流程"><a href="#函数调用流程" class="headerlink" title="函数调用流程"></a>函数调用流程</h2><p>宏函数注意, 保证运算的完整性. 将频繁, 短小的函数封装为宏函数(以空间换时间).</p>
+<p>主调函数和被调函数要有一致约定, 才能正确调用函数, 这个约定称为调用惯例</p>
+<p>C/C++ 默认调用惯例为 cdecl</p>
+<p>调用惯例: cdecl(默认)</p>
+<p>出栈方: 函数调用方(主调函数)</p>
+<p>参数传递: 从右往左参数入栈</p>
+<p>名字修饰: 下划线+函数名</p>
+<p>栈的生长方向: 栈底高地址, 栈顶低地址</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/11/26/C%E5%8F%98%E9%87%8F/" data-id="ckwg705q00000uqkf2zyoa18u" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/11/26/C%E5%8F%98%E9%87%8F/" data-id="ckwhihuok00004lkfd1c95786" class="article-share-link">Share</a>
       
       
     </footer>
@@ -166,7 +241,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/11/26/hello-world/" data-id="ckwg5z1km00005rkf5qq25iq5" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/11/26/hello-world/" data-id="ckwhihuos00014lkf314c31n6" class="article-share-link">Share</a>
       
       
     </footer>
@@ -205,6 +280,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2021/11/30/%E6%8C%87%E9%92%88/">指针</a>
+          </li>
         
           <li>
             <a href="/2021/11/26/C%E5%8F%98%E9%87%8F/">C语言内存分区</a>

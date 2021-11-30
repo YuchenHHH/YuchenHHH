@@ -15,7 +15,7 @@
 <meta property="og:description" content="运行之前再执行C程序之前, 第一步需要对程序进行编译  预处理: 宏定义展开, 头文件展开, 条件编译, 这里并不会检查语法; 编译: 检查语法, 将预处理后文件编译生成汇编文件; 汇编: 将汇编文件生成目标文件(二进制文件); 链接: 将目标文件链接成可执行程序.  下面是一个最基本的C程序 12345678&#x2F;&#x2F; filename: test.c#include &lt;stdio.h&gt;i">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-11-26T09:15:20.000Z">
-<meta property="article:modified_time" content="2021-11-26T11:28:41.471Z">
+<meta property="article:modified_time" content="2021-11-27T09:49:07.789Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
@@ -115,11 +115,36 @@
 <h3 id="未初始化数据区-bss"><a href="#未初始化数据区-bss" class="headerlink" title="未初始化数据区(bss)"></a>未初始化数据区(bss)</h3><p>未初始化数据区在程序开始执行之前呗内核初始化为 0 或 NULL.</p>
 <h2 id="运行之后"><a href="#运行之后" class="headerlink" title="运行之后"></a>运行之后</h2><h3 id="栈区-stack"><a href="#栈区-stack" class="headerlink" title="栈区(stack)"></a>栈区(stack)</h3><p>由编译器自动分配释放, 存放函数的参数值, 返回值以及局部变量等, 在运行过程中实时加载和释放, 因此生命周期为申请到释放该段栈空间.</p>
 <h3 id="堆区-heap"><a href="#堆区-heap" class="headerlink" title="堆区(heap)"></a>堆区(heap)</h3><p>堆是一个大容器, 容量要远远大于栈. 一般由程序员分配和释放, 若不释放, 程序结束时由操作系统释放.</p>
+<h3 id="数据区"><a href="#数据区" class="headerlink" title="数据区"></a>数据区</h3><p>静态变量在程序运行前分配内存,生命周期在程序运行结束时死亡;</p>
+<p>默认属于内部链接属性, 只能在当前文件中使用.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// filename: test.c</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> a = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// filaname: test1.c</span></span><br><span class="line">a = <span class="number">100</span>; <span class="comment">// 错误, 在文件外无法访问</span></span><br></pre></td></tr></table></figure>
+
+<p>全局变量关键字extern, 属于外部链接属性</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// filename: test.c</span></span><br><span class="line"><span class="keyword">int</span> a = <span class="number">10</span>; <span class="comment">// 默认是外部链接属性</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// filaname: test1.c</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">int</span> a; <span class="comment">// 链接时在其他文件中查找, 如果没有, 报错</span></span><br><span class="line">a = <span class="number">100</span> </span><br></pre></td></tr></table></figure>
+<p>编译命令为</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc test1.c test.c -o main</span><br></pre></td></tr></table></figure>
+
+<p>const常量</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> a = <span class="number">10</span>; <span class="comment">// 全局const</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    a = <span class="number">100</span>; <span class="comment">// 直接修改失败</span></span><br><span class="line">    <span class="keyword">int</span> *p = &amp;a;</span><br><span class="line">    *p = <span class="number">10</span>; <span class="comment">// 间接修改失败</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> b = <span class="number">100</span>; <span class="comment">// 数据存放在栈区, 并不是常量</span></span><br><span class="line">    b = <span class="number">10</span>; <span class="comment">// 直接修改失败</span></span><br><span class="line">    <span class="keyword">int</span> *p = &amp;b;</span><br><span class="line">    *p = <span class="number">10</span>; <span class="comment">// 可以修改, 但是会报警告</span></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字符串常量</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> *p1 = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">    <span class="keyword">char</span> *p2 = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">    <span class="keyword">char</span> *p3 = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, (<span class="keyword">int</span>)p1);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, (<span class="keyword">int</span>)p2);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, (<span class="keyword">int</span>)p3);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, (<span class="keyword">int</span>)<span class="string">&quot;hello&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>得到结果为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1721774088</span><br><span class="line">1721774088</span><br><span class="line">1721774088</span><br><span class="line">1721774088</span><br></pre></td></tr></table></figure>
+<p>因此字符串常量是可以共享的, 置于常量区.<br>ANSI C 规定: 字符串常量的修改是未定义的行为</p>
+<h2 id="函数调用流程"><a href="#函数调用流程" class="headerlink" title="函数调用流程"></a>函数调用流程</h2><p>宏函数注意, 保证运算的完整性. 将频繁, 短小的函数封装为宏函数(以空间换时间).</p>
+<p>主调函数和被调函数要有一致约定, 才能正确调用函数, 这个约定称为调用惯例</p>
+<p>C/C++ 默认调用惯例为 cdecl</p>
+<p>调用惯例: cdecl(默认)</p>
+<p>出栈方: 函数调用方(主调函数)</p>
+<p>参数传递: 从右往左参数入栈</p>
+<p>名字修饰: 下划线+函数名</p>
+<p>栈的生长方向: 栈底高地址, 栈顶低地址</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/11/26/C%E5%8F%98%E9%87%8F/" data-id="ckwg705q00000uqkf2zyoa18u" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/11/26/C%E5%8F%98%E9%87%8F/" data-id="ckwhihuok00004lkfd1c95786" class="article-share-link">Share</a>
       
       
     </footer>
@@ -127,6 +152,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2021/11/30/%E6%8C%87%E9%92%88/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          指针
+        
+      </div>
+    </a>
   
   
     <a href="/2021/11/26/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
@@ -166,6 +200,10 @@
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2021/11/30/%E6%8C%87%E9%92%88/">指针</a>
+          </li>
         
           <li>
             <a href="/2021/11/26/C%E5%8F%98%E9%87%8F/">C语言内存分区</a>
